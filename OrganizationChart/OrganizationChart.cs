@@ -17,7 +17,7 @@ namespace OrganizationChart
             Employees = new Queue<Employee>();
         }
 
-        public string PrintTreeView()
+        public string ToString()
         {
             if (Manager == null)
             {
@@ -59,11 +59,11 @@ namespace OrganizationChart
 
         private string MakeIdentation(int identationLength)
         {
-            string identation = " ";
+            string identation = "\v";
 
             for (int i = 0; i < identationLength; i++)
             {
-                identation += " ";
+                identation += "\v";
             }
 
             return identation;

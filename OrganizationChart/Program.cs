@@ -12,27 +12,29 @@ namespace OrganizationChart
         {
             OrganizationChart chart = new OrganizationChart();
 
-            Employee felix = new Employee("aaaaa");
-            Employee x = new Employee("bbbbb");
-            Employee x1 = new Employee("ccccc");
-            Employee x2 = new Employee("ddddd");
-            Employee rubiana = new Employee("eeeee");
-            Employee vinicius = new Employee("fffff");
-            Employee vinicius1 = new Employee("ggggg");
-            Employee iury = new Employee("hhhhh");
+            Employee nedStark = new Employee("NedStark");
+            Employee johnSnow = new Employee("JohnSnow");
+            Employee sansaStark = new Employee("Sansa");
+            Employee aryaStark = new Employee("Arya");
+            Employee bran = new Employee("Bran");
+            Employee rickon = new Employee("Rickon");
+            Employee hodor = new Employee("Hodor");
+            Employee meera = new Employee("Meera");
 
-            chart.Manager = felix;
+            chart.Manager = nedStark;
 
-            felix.AddSubordinate(rubiana);
-            felix.AddSubordinate(x);
-            x.AddSubordinate(x1);
-            x.AddSubordinate(x2);
-            rubiana.AddSubordinate(vinicius);
-            rubiana.AddSubordinate(iury);
-            vinicius.AddSubordinate(vinicius1);
-            vinicius.AddSubordinate(vinicius1);
+            nedStark.AddSubordinate(bran);
+            nedStark.AddSubordinate(johnSnow);
+            nedStark.AddSubordinate(aryaStark);
 
-            Console.WriteLine(chart.PrintTreeView());
+            johnSnow.AddSubordinate(sansaStark);
+            
+            bran.AddSubordinate(rickon);
+            bran.AddSubordinate(meera);
+            bran.AddSubordinate(hodor);
+            
+
+            Console.WriteLine(chart.ToString());
             Console.Read();
         }
     }
