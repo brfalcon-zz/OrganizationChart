@@ -161,7 +161,7 @@ namespace OrganizationChart
             var tempPtr = levelZeroPtr;
             while(tempPtr != null)
             {
-                Prev
+                Prev d
             }
         }
 
