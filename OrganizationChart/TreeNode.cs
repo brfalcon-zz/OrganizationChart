@@ -27,8 +27,8 @@ namespace OrganizationChart
 
         public string Info { get; set; }
 
-        public bool IsLeaf { get { return Offspring == null; } }
-        public bool HasChild { get { return Offspring != null; } }
+        public bool IsLeaf { get { return Offspring.Count == 0; } }
+        public bool HasChild { get { return Offspring.Count != 0; } }
         public bool HasLeftSibling { get { return LeftSibling != null; } }
         public bool HasRightSibling { get { return RightSbling != null; } }
 

@@ -74,12 +74,15 @@ namespace OrganizationChart
             m.Offspring.Add(k);
             m.Offspring.Add(l);
 
-            foreach(var node in new TreeNode[] { o , e ,n, m })
+            var nodes = new TreeNode[] { o, e, n, d, m };
+
+            
+            foreach (var node in nodes)
             {
                 TreeNode lastChild = null;
                 foreach (var child in node.Offspring)
                 {
-                    child.Parent = o;
+                    child.Parent = node;
 
                     if (lastChild != null)
                     {
