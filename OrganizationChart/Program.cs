@@ -75,7 +75,6 @@ namespace OrganizationChart
             m.Offspring.Add(l);
 
             var nodes = new TreeNode[] { o, e, n, d, m };
-
             
             foreach (var node in nodes)
             {
@@ -96,14 +95,33 @@ namespace OrganizationChart
 
             if (organograma.TreePosition(o))
             {
-                Console.WriteLine("Deu certo!");
+                PrintTree(o, Console.WindowWidth / 2);
             }
             else
             {
                 Console.WriteLine("Nao Deu certo!");
             }
-
+            
             Console.Read();
+        }
+
+        static void PrintTree(TreeNode apexNode, int offset)
+        {
+            if(apexNode != null)
+            {
+                Console.SetCursorPosition((int) Math.Round(apexNode.XCoordinate + offset), (int) Math.Round(apexNode.YCoordinate));
+                Console.Write(apexNode.Info);
+
+                if (apexNode.HasRightSibling)
+                {
+                    PrintTree(apexNode.RightSbling, offset);
+                }
+
+                if (apexNode.HasChild)
+                {
+                    PrintTree(apexNode.FirstChild, offset);
+                }
+            }
         }
     }
 }

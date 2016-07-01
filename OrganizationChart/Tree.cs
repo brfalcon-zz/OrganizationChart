@@ -13,7 +13,7 @@ namespace OrganizationChart
         private const int FRAME_THICKNESS = 1;
         private const int SUBTREE_SEPARATION = 4;
         private const int SIBLING_SEPARATION = 4;
-        private const int LEVEL_SEPARATION = 5;
+        private const int LEVEL_SEPARATION = 3;
         private const int MAXIMUM_DEPTH = 10;
 
         public enum FRAME_TYPE { FRAME, NO_FRAME }
@@ -69,7 +69,7 @@ namespace OrganizationChart
         {
             return !(Math.Abs(xTemp) > 32000 || Math.Abs(xTemp) > 32000);
         }
-        private void TreeMeanNodeSize(TreeNode leftNode, TreeNode rightNode)
+        private void MeanNodeSize(TreeNode leftNode, TreeNode rightNode)
         {
             meanWidth = 2;
 
@@ -119,7 +119,7 @@ namespace OrganizationChart
             //        break;
             //}
         }
-        private TreeNode TreeGetLeftMost(TreeNode thisNode, int currentLevel, int searchDepth)
+        private TreeNode GetLeftMost(TreeNode thisNode, int currentLevel, int searchDepth)
         {
             TreeNode leftMost;
             TreeNode rightMost;
@@ -135,18 +135,18 @@ namespace OrganizationChart
             else
             {
                 rightMost = thisNode.FirstChild;
-                leftMost = TreeGetLeftMost(rightMost, currentLevel + 1, searchDepth);
+                leftMost = GetLeftMost(rightMost, currentLevel + 1, searchDepth);
 
-                while(leftMost != null && rightMost.HasRightSibling)
+                while(leftMost == null && rightMost.HasRightSibling)
                 {
                     rightMost = rightMost.RightSbling;
-                    leftMost = TreeGetLeftMost(rightMost, currentLevel + 1, searchDepth);
+                    leftMost = GetLeftMost(rightMost, currentLevel + 1, searchDepth);
                 }
 
                 return leftMost;
             }
         }
-        private void TreeApportion(TreeNode thisNode, int currentLevel)
+        private void Apportion(TreeNode thisNode, int currentLevel)
         {
             TreeNode leftMost;
             TreeNode neighbor;
@@ -184,16 +184,21 @@ namespace OrganizationChart
                     leftModsum  += ancestorNeighbor.Modifier;
                 }
 
-                TreeMeanNodeSize(leftMost, neighbor);
+                MeanNodeSize(leftMost, neighbor);
 
-                moveDistance = (neighbor.Prelim + leftModsum + SUBTREE_SEPARATION + meanWidth) - (leftMost.Prelim + rightModsum);
+                moveDistance = (neighbor.Prelim +
+                                leftModsum + 
+                                SUBTREE_SEPARATION +
+                                meanWidth) -
+                                (leftMost.Prelim +
+                                rightModsum);
 
                 if(moveDistance > 0)
                 {
                     leftSiblings = 0;
                     for(tempPtr = thisNode;
                         tempPtr != null && tempPtr != ancestorNeighbor;
-                        tempPtr = tempPtr.LeftNeighbor)
+                        tempPtr = tempPtr.LeftSibling)
                     {
                         leftSiblings++;
                     }
@@ -202,7 +207,7 @@ namespace OrganizationChart
                     {
                         portion = moveDistance / leftSiblings;
                         for(tempPtr = thisNode;
-                            tempPtr != null && tempPtr != ancestorNeighbor;
+                            tempPtr != ancestorNeighbor;
                             tempPtr = tempPtr.LeftSibling)
                         {
                             tempPtr.Prelim   += moveDistance;
@@ -220,15 +225,16 @@ namespace OrganizationChart
                 compareDepth++;
                 if (leftMost.IsLeaf)
                 {
-                    leftMost = TreeGetLeftMost(thisNode, 0, compareDepth);
+                    leftMost = GetLeftMost(thisNode, 0, compareDepth);
                 }
                 else
                 {
                     leftMost = leftMost.FirstChild;
                 }
+                neighbor = leftMost?.LeftNeighbor;
             }
         }
-        private bool TreeFirstWalk(TreeNode thisNode, int currentLevel)
+        private bool FirstWalk(TreeNode thisNode, int currentLevel)
         {
             TreeNode leftMost;
             TreeNode rightmost;
@@ -244,11 +250,11 @@ namespace OrganizationChart
             {
                 if (thisNode.HasLeftSibling)
                 {
-                    TreeMeanNodeSize(thisNode.LeftSibling, thisNode);
+                    MeanNodeSize(thisNode.LeftSibling, thisNode);
 
                     thisNode.Prelim = thisNode.LeftSibling.Prelim +
-                                        SIBLING_SEPARATION +
-                                        meanWidth;
+                                      SIBLING_SEPARATION +
+                                      meanWidth;
                 }
                 else
                 {
@@ -259,13 +265,13 @@ namespace OrganizationChart
             {
                 leftMost = rightmost = thisNode.FirstChild;
 
-                if (TreeFirstWalk(leftMost, currentLevel + 1))
+                if (FirstWalk(leftMost, currentLevel + 1))
                 {
                     while (rightmost.HasRightSibling)
                     {
                         rightmost = rightmost.RightSbling;
 
-                        if (TreeFirstWalk(rightmost, currentLevel + 1))
+                        if (FirstWalk(rightmost, currentLevel + 1))
                         {
 
                         }
@@ -279,14 +285,14 @@ namespace OrganizationChart
 
                     if (thisNode.HasLeftSibling)
                     {
-                        TreeMeanNodeSize(thisNode.LeftSibling, thisNode);
+                        MeanNodeSize(thisNode.LeftSibling, thisNode);
 
                         thisNode.Prelim = thisNode.LeftSibling.Prelim +
-                                            SIBLING_SEPARATION +
-                                            meanWidth;
+                                          SIBLING_SEPARATION +
+                                          meanWidth;
                         thisNode.Modifier = thisNode.Prelim - midPoint;
 
-                        TreeApportion(thisNode, currentLevel);
+                        Apportion(thisNode, currentLevel);
                     }
                     else
                     {
@@ -299,61 +305,38 @@ namespace OrganizationChart
                 }
             } 
                 
-            
             return true;
         }
-        private bool TreeSecondWalk(TreeNode thisNode, int currentLevel, double modsum)
+        private bool SecondWalk(TreeNode thisNode, int currentLevel, double modsum)
         {
             bool result = true;
             double xTemp = 0, yTemp = 0;
-            double newModsum;
 
             if(currentLevel <= MAXIMUM_DEPTH)
             {
-                newModsum = modsum;
-                switch (rootOrientation)
-                {
-                    case ROOT_ORIENTATION.NORTH:
-                        xTemp = xTopAjustment +
-                                (thisNode.Prelim + modsum);
-                        yTemp = yTopAjustment +
-                                (currentLevel * LEVEL_SEPARATION);
-                        break;
-                    case ROOT_ORIENTATION.SOUTH:
-                        xTemp = xTopAjustment +
-                                (thisNode.Prelim + modsum);
-                        yTemp = yTopAjustment -
-                                (currentLevel * LEVEL_SEPARATION);
-                        break;
-                    case ROOT_ORIENTATION.EAST:
-                        xTemp = xTopAjustment +
-                                (currentLevel * LEVEL_SEPARATION);
-                        yTemp = yTopAjustment -
-                                (thisNode.Prelim + modsum);
-                        break;
-                    case ROOT_ORIENTATION.WEST:
-                        xTemp = xTopAjustment -
-                                (currentLevel * LEVEL_SEPARATION);
-                        yTemp = yTopAjustment -
-                                (thisNode.Prelim + modsum);
-                        break;
-                }
+                xTemp = xTopAjustment +
+                        thisNode.Prelim +
+                        modsum;
+                yTemp = yTopAjustment +
+                        (currentLevel * LEVEL_SEPARATION);
 
-                if(CheckExtentsRange(xTemp, yTemp))
+                if (CheckExtentsRange(xTemp, yTemp))
                 {
                     thisNode.XCoordinate = xTemp;
                     thisNode.YCoordinate = yTemp;
 
                     if (thisNode.HasChild)
                     {
-                        result = TreeSecondWalk(thisNode.FirstChild, 
-                                                currentLevel + 1,
-                                                modsum + thisNode.Modifier);
+                        result = SecondWalk(thisNode.FirstChild, 
+                                            currentLevel + 1,
+                                            modsum + thisNode.Modifier);
                     }
-
+                    
                     if(result == true && thisNode.HasRightSibling)
                     {
-                        result = TreeSecondWalk(thisNode.RightSbling, currentLevel + 1, modsum);
+                        result = SecondWalk(thisNode.RightSbling,
+                                            currentLevel,
+                                            modsum);
                     }
                 }
                 else
@@ -374,24 +357,12 @@ namespace OrganizationChart
             {
                 InitPrevNodeAtLevel();
 
-                if(TreeFirstWalk(apexNode, 0))
+                if(FirstWalk(apexNode, 0))
                 {
-                    switch (rootOrientation)
-                    {
-                        case ROOT_ORIENTATION.NORTH:
-                        case ROOT_ORIENTATION.SOUTH:
-                            xTopAjustment = apexNode.XCoordinate - apexNode.Prelim;
-                            yTopAjustment = apexNode.YCoordinate;
+                    xTopAjustment = apexNode.XCoordinate - apexNode.Prelim;
+                    yTopAjustment = apexNode.YCoordinate;
 
-                            break;
-                        case ROOT_ORIENTATION.EAST:
-                        case ROOT_ORIENTATION.WEST:
-                            xTopAjustment = apexNode.XCoordinate;
-                            yTopAjustment = apexNode.YCoordinate + apexNode.Prelim;
-
-                            break;
-                    }
-                    return TreeSecondWalk(apexNode, 0, 0);
+                    return SecondWalk(apexNode, 0, 0);
                 }
                 else
                 {

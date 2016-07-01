@@ -14,7 +14,6 @@ namespace OrganizationChart
         public TreeNode RightSbling { get; set; }
         public double XCoordinate { get; set; }
         public double YCoordinate { get; set; }
-
         public TreeNode FirstChild {
             get
             {
@@ -24,9 +23,7 @@ namespace OrganizationChart
         public TreeNode LeftNeighbor { get; set; }
         public double Prelim { get; set; }
         public double Modifier { get; set; }
-
         public string Info { get; set; }
-
         public bool IsLeaf { get { return Offspring.Count == 0; } }
         public bool HasChild { get { return Offspring.Count != 0; } }
         public bool HasLeftSibling { get { return LeftSibling != null; } }
@@ -36,6 +33,11 @@ namespace OrganizationChart
         {
             this.Info = info;
             this.Offspring = new List<TreeNode>();
+        }
+
+        public override string ToString()
+        {
+            return this.Info;
         }
     }
 }
