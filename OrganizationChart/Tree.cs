@@ -8,11 +8,11 @@ namespace OrganizationChart
 {
     public class Tree
     {
-        private const int NODE_WIDTH = 20;
-        private const int NODE_HEIGHT = 10;
+        private const int NODE_WIDTH = 5;
+        private const int NODE_HEIGHT = 5;
         private const int FRAME_THICKNESS = 1;
-        private const int SUBTREE_SEPARATION = 4;
-        private const int SIBLING_SEPARATION = 4;
+        private const int SUBTREE_SEPARATION = 3;
+        private const int SIBLING_SEPARATION = 3;
         private const int LEVEL_SEPARATION = 3;
         private const int MAXIMUM_DEPTH = 10;
 
@@ -29,7 +29,14 @@ namespace OrganizationChart
         private double meanWidth;
 
         public Tree() { }
-        
+
+        private void InitPrevNodeAtLevel()
+        {
+            for (int i = 0; i < prevNodes.Count; i++)
+            {
+                prevNodes[i] = null;
+            }
+        }
         private TreeNode GetPrevNodeAtLevel(int levelNbr)
         {
             if (prevNodes == null || (prevNodes != null && prevNodes.Count == 0))
@@ -58,66 +65,60 @@ namespace OrganizationChart
                 prevNodes[levelNbr] = thisNode;
             }
         }
-        private void InitPrevNodeAtLevel()
-        {
-            for (int i = 0; i < prevNodes.Count; i++)
-            {
-                prevNodes[i] = null;
-            }
-        }
+        
         private bool CheckExtentsRange(double xTemp, double yTemp)
         {
             return !(Math.Abs(xTemp) > 32000 || Math.Abs(xTemp) > 32000);
         }
         private void MeanNodeSize(TreeNode leftNode, TreeNode rightNode)
         {
-            meanWidth = 2;
+            meanWidth = 0;
 
-            //switch (rootOrientation)
-            //{
-            //    case ROOT_ORIENTATION.NORTH:
-            //    case ROOT_ORIENTATION.SOUTH:
-            //        if(leftNode != null)
-            //        {
-            //            meanWidth += NODE_WIDTH / 2;
-            //            //if(frameType != FRAME_TYPE.NO_FRAME)
-            //            //{
-            //            //    meanWidth += FRAME_THICKNESS;
-            //            //}
-            //        }
+            switch (rootOrientation)
+            {
+                case ROOT_ORIENTATION.NORTH:
+                case ROOT_ORIENTATION.SOUTH:
+                    if (leftNode != null)
+                    {
+                        meanWidth += NODE_WIDTH / 2.0;
+                        //if(frameType != FRAME_TYPE.NO_FRAME)
+                        //{
+                        //    meanWidth += FRAME_THICKNESS;
+                        //}
+                    }
 
-            //        if(rightNode != null)
-            //        {
-            //            meanWidth += NODE_WIDTH / 2;
-            //            //if (frameType != FRAME_TYPE.NO_FRAME)
-            //            //{
-            //            //    meanWidth += FRAME_THICKNESS;
-            //            //}
-            //        }
+                    if (rightNode != null)
+                    {
+                        meanWidth += NODE_WIDTH / 2.0;
+                        //if (frameType != FRAME_TYPE.NO_FRAME)
+                        //{
+                        //    meanWidth += FRAME_THICKNESS;
+                        //}
+                    }
 
-            //        break;
-            //    case ROOT_ORIENTATION.EAST:
-            //    case ROOT_ORIENTATION.WEST:
-            //        if (leftNode != null)
-            //        {
-            //            meanWidth += NODE_HEIGHT / 2;
-            //            //if (frameType != FRAME_TYPE.NO_FRAME)
-            //            //{
-            //            //    meanWidth += FRAME_THICKNESS;
-            //            //}
-            //        }
+                    break;
+                case ROOT_ORIENTATION.EAST:
+                case ROOT_ORIENTATION.WEST:
+                    if (leftNode != null)
+                    {
+                        meanWidth += NODE_HEIGHT / 2.0;
+                        //if (frameType != FRAME_TYPE.NO_FRAME)
+                        //{
+                        //    meanWidth += FRAME_THICKNESS;
+                        //}
+                    }
 
-            //        if (rightNode != null)
-            //        {
-            //            meanWidth += NODE_HEIGHT / 2;
-            //            //if (frameType != FRAME_TYPE.NO_FRAME)
-            //            //{
-            //            //    meanWidth += FRAME_THICKNESS;
-            //            //}
-            //        }
+                    if (rightNode != null)
+                    {
+                        meanWidth += NODE_HEIGHT / 2.0;
+                        //if (frameType != FRAME_TYPE.NO_FRAME)
+                        //{
+                        //    meanWidth += FRAME_THICKNESS;
+                        //}
+                    }
 
-            //        break;
-            //}
+                    break;
+            }
         }
         private TreeNode GetLeftMost(TreeNode thisNode, int currentLevel, int searchDepth)
         {
@@ -139,7 +140,7 @@ namespace OrganizationChart
 
                 while(leftMost == null && rightMost.HasRightSibling)
                 {
-                    rightMost = rightMost.RightSbling;
+                    rightMost = rightMost.RightSibling;
                     leftMost = GetLeftMost(rightMost, currentLevel + 1, searchDepth);
                 }
 
@@ -269,7 +270,7 @@ namespace OrganizationChart
                 {
                     while (rightmost.HasRightSibling)
                     {
-                        rightmost = rightmost.RightSbling;
+                        rightmost = rightmost.RightSibling;
 
                         if (FirstWalk(rightmost, currentLevel + 1))
                         {
@@ -334,7 +335,7 @@ namespace OrganizationChart
                     
                     if(result == true && thisNode.HasRightSibling)
                     {
-                        result = SecondWalk(thisNode.RightSbling,
+                        result = SecondWalk(thisNode.RightSibling,
                                             currentLevel,
                                             modsum);
                     }

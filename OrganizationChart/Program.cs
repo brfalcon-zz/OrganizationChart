@@ -86,7 +86,7 @@ namespace OrganizationChart
                     if (lastChild != null)
                     {
                         child.LeftSibling = lastChild;
-                        lastChild.RightSbling = child;
+                        lastChild.RightSibling = child;
                     }
 
                     lastChild = child;
@@ -109,12 +109,14 @@ namespace OrganizationChart
         {
             if(apexNode != null)
             {
-                Console.SetCursorPosition((int) Math.Round(apexNode.XCoordinate + offset), (int) Math.Round(apexNode.YCoordinate));
-                Console.Write(apexNode.Info);
+                //Console.SetCursorPosition((int) Math.Round(apexNode.XCoordinate + offset), (int) Math.Round(apexNode.YCoordinate));
+                //Console.Write(apexNode.Info);
+                
+                Console.WriteLine(apexNode.Info + " (" + apexNode.XCoordinate + ", " + apexNode.YCoordinate + ")");
 
                 if (apexNode.HasRightSibling)
                 {
-                    PrintTree(apexNode.RightSbling, offset);
+                    PrintTree(apexNode.RightSibling, offset);
                 }
 
                 if (apexNode.HasChild)
